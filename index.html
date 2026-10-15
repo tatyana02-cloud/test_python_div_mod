@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Тест: Деление и остаток в Python</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .quiz-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 740px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      padding: 32px;
+      position: relative;
+    }
+    .start-screen {
+      text-align: center;
+      padding: 10px 0;
+    }
+    .start-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 20px;
+    }
+    .rules-card {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 20px 24px;
+      text-align: left;
+      margin-bottom: 28px;
+    }
+    .rules-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 12px;
+    }
+    .rules-list {
+      list-style-type: decimal;
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .rules-list li {
+      font-size: 15px;
+      color: #334155;
+      line-height: 1.5;
+    }
+    .btn-primary {
+      background: #334155;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover {
+      background: #1e293b;
+    }
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #334155;
+      transition: width 0.3s ease;
+    }
+    .header-info {
+      display: flex;
+      justify-content: space-between;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .question-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+    .code-box {
+      background: #1e1e2e;
+      color: #ffffff;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .option-btn {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 15px;
+      color: #334155;
+      text-align: left;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+      line-height: 1.4;
+    }
+    .option-btn:hover:not(:disabled):not(.wrong) {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .option-btn.correct {
+      background: #dcfce7 !important;
+      border-color: #22c55e !important;
+      color: #15803d !important;
+      font-weight: 600;
+    }
+    .option-btn.wrong {
+      background: #fee2e2 !important;
+      border-color: #ef4444 !important;
+      color: #b91c1c !important;
+    }
+    .feedback-box {
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: none;
+      line-height: 1.5;
+    }
+    .feedback-box.correct {
+      background: #f0fdf4;
+      border-left: 5px solid #22c55e;
+      color: #166534;
+    }
+    .feedback-box.wrong {
+      background: #fef2f2;
+      border-left: 5px solid #ef4444;
+      color: #991b1b;
+    }
+    .next-btn {
+      background: #334155;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: none;
+      margin-left: auto;
+      transition: background 0.2s;
+    }
+    .next-btn:hover {
+      background: #1e293b;
+    }
+    .result-screen {
+      display: none;
+      text-align: center;
+      padding: 10px 0;
+    }
+    .result-score {
+      font-size: 44px;
+      font-weight: 800;
+      color: #1e293b;
+      margin: 12px 0;
+    }
+    .result-msg {
+      font-size: 15px;
+      color: #475569;
+      margin-bottom: 24px;
+    }
+    .results-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin: 16px 0 28px 0;
+    }
+    .badge-item {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .badge-item.correct {
+      background: #dcfce7;
+      color: #15803d;
+      border: 2px solid #22c55e;
+    }
+    .badge-item.wrong {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 2px solid #ef4444;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-card">
+    <div class="start-screen" id="start-screen">
+      <h1 class="start-title">Тест: Операции деления в Python</h1>
+      <div class="rules-card">
+        <div class="rules-title">Правила прохождения:</div>
+        <ol class="rules-list">
+          <li><strong>Баллы:</strong> 1 балл начисляется за верный ответ с первой попытки.</li>
+          <li><strong>Пояснения:</strong> после каждого ответа вы увидите подробный разбор решения.</li>
+          <li>В тесте 8 вопросов, расположенных по нарастанию сложности.</li>
+        </ol>
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">Начать тест</button>
+    </div>
+
+    <div id="quiz-content" style="display: none;">
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress"></div>
+      </div>
+      <div class="header-info">
+        <span id="question-number">Задание 1 из 8</span>
+        <span id="score-counter">Баллы: 0</span>
+      </div>
+      <div class="question-title" id="question-text"></div>
+      <div class="code-box" id="code-block" style="display: none;"></div>
+      <div class="options-grid" id="options"></div>
+      <div class="feedback-box" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">Следующее задание</button>
+    </div>
+
+    <div class="result-screen" id="result-screen">
+      <h2>Тест завершен!</h2>
+      <div class="result-score" id="final-score">0 / 8</div>
+      <p class="result-msg" id="final-message"></p>
+      
+      <div style="font-weight: 600; color: #334155; margin-bottom: 8px;">Результаты по заданиям:</div>
+      <div class="results-badges" id="results-badges"></div>
+
+      <button class="btn-primary" onclick="restartQuiz()">Пройти заново</button>
+    </div>
+  </div>
+
+  <script>
+    const dynamicSlots = {
+      // Слот №1: Обычное вещественное деление /
+      slot1: [
+        {
+          text: "№1. Какой результат и тип данных вернет операция деления 7 / 2?",
+          code: "print(7 / 2)",
+          options: [
+            { text: "3.5 (тип float)", comment: "Оператор обычного деления / в Python ВСЕГДА возвращает вещественное число (float).", isCorrect: true },
+            { text: "3 (тип int)", comment: "Одинарный слэш / всегда выполняет точное вещественное деление с точкой.", isCorrect: false },
+            { text: "3.5 (тип str)", comment: "Результат деления — это число, а не строка.", isCorrect: false },
+            { text: "1 (тип int)", comment: "1 — это остаток от деления (оператор %), а не результат обычного деления.", isCorrect: false }
+          ]
+        },
+        {
+          text: "№1. Какой результат и тип данных вернет операция деления 9 / 2?",
+          code: "print(9 / 2)",
+          options: [
+            { text: "4.5 (тип float)", comment: "Оператор обычного деления / в Python ВСЕГДА возвращает вещественное число (float).", isCorrect: true },
+            { text: "4 (тип int)", comment: "Одинарный слэш / сохраняет дробную часть и возвращает float.", isCorrect: false },
+            { text: "4.5 (тип str)", comment: "Результатом деления является числовое значение float, а не строка.", isCorrect: false },
+            { text: "1 (тип int)", comment: "1 — это остаток от деления (оператор %).", isCorrect: false }
+          ]
+        },
+        {
+          text: "№1. Какой результат и тип данных вернет операция деления 11 / 4?",
+          code: "print(11 / 4)",
+          options: [
+            { text: "2.75 (тип float)", comment: "Оператор обычного деления / всегда возвращает значение с плавающей точкой (float).", isCorrect: true },
+            { text: "2 (тип int)", comment: "Одинарный слэш / отбрасывание дробной части не производит.", isCorrect: false },
+            { text: "2.75 (тип str)", comment: "Результатом деления является число типа float, а не текст.", isCorrect: false },
+            { text: "3 (тип int)", comment: "Python не производит автоматическое математическое округление.", isCorrect: false }
+          ]
+        }
+      ],
+
+      // Слот №2: Целочисленное деление // и остаток %
+      slot2: [
+        {
+          text: "№2. Что выведет этот код при выполнении целочисленного деления и взятия остатка?",
+          code: "print(19 // 5, 19 % 5)",
+          options: [
+            { text: "3 4", comment: "19 // 5 дает 3 целых, а 19 % 5 дает остаток 4 (так как 3 * 5 + 4 = 19).", isCorrect: true },
+            { text: "3.8 4", comment: "Оператор // отбрасывает дробную часть и возвращает строго целое число.", isCorrect: false },
+            { text: "4 3", comment: "Сначала выводится целая часть (3), затем остаток (4).", isCorrect: false },
+            { text: "3 9", comment: "Остаток от деления на 5 всегда строго меньше 5.", isCorrect: false }
+          ]
+        },
+        {
+          text: "№2. Что выведет этот код при выполнении целочисленного деления и взятия остатка?",
+          code: "print(23 // 4, 23 % 4)",
+          options: [
+            { text: "5 3", comment: "23 // 4 дает 5 целых, а 23 % 4 дает остаток 3 (так как 5 * 4 + 3 = 23).", isCorrect: true },
+            { text: "5.75 3", comment: "Оператор // отсекает дробную часть без округления, получается 5.", isCorrect: false },
+            { text: "3 5", comment: "Сначала печатается результат целочисленного деления (5), затем остаток (3).", isCorrect: false },
+            { text: "5 7", comment: "Остаток от деления на 4 всегда строго меньше 4.", isCorrect: false }
+          ]
+        },
+        {
+          text: "№2. Что выведет этот код при выполнении целочисленного деления и взятия остатка?",
+          code: "print(17 // 3, 17 % 3)",
+          options: [
+            { text: "5 2", comment: "17 // 3 дает 5 целых, а 17 % 3 дает остаток 2 (так как 5 * 3 + 2 = 17).", isCorrect: true },
+            { text: "5.6 2", comment: "Оператор // отбрасывает дробную часть и возвращает целое число 5.", isCorrect: false },
+            { text: "2 5", comment: "Сначала выводится целая часть (5), затем остаток (2).", isCorrect: false },
+            { text: "5 1", comment: "17 - 15 = 2, поэтому остаток равен 2.", isCorrect: false }
+          ]
+        }
+      ],
+
+      // Слот №3: Деление меньшего числа на большее
+      slot3: [
+        {
+          text: "№3. Что выведет Python при делении меньшего числа на большее?",
+          code: "print(4 // 7, 4 % 7)",
+          options: [
+            { text: "0 4", comment: "В числе 4 число 7 содержится 0 целых раз (4 // 7 = 0). Всё число 4 целиком остается в остатке (4 % 7 = 4, так как 0 * 7 + 4 = 4).", isCorrect: true },
+            { text: "1 3", comment: "Число 7 не помещается в 4 ни разу, целых частей 0.", isCorrect: false },
+            { text: "0.57 4", comment: "Оператор // работает только с целыми числами и отбрасывает дробную часть.", isCorrect: false },
+            { text: "0 0", comment: "Так как 4 не разделилось на 7, оно целиком переходит в остаток.", isCorrect: false }
+          ]
+        },
+        {
+          text: "№3. Что выведет Python при делении меньшего числа на большее?",
+          code: "print(2 // 5, 2 % 5)",
+          options: [
+            { text: "0 2", comment: "Число 5 содержится в числе 2 ровно 0 раз (2 // 5 = 0). Число 2 целиком остается в остатке (2 % 5 = 2, так как 0 * 5 + 2 = 2).", isCorrect: true },
+            { text: "1 3", comment: "Пятерка не помещается в двойку, целых частей будет 0.", isCorrect: false },
+            { text: "0.4 2", comment: "Оператор // отбрасывает дробную часть и возвращает int.", isCorrect: false },
+            { text: "2 0", comment: "Целая часть равна 0, а остаток равен 2.", isCorrect: false }
+          ]
+        },
+        {
+          text: "№3. Что выведет Python при делении меньшего числа на большее?",
+          code: "print(3 // 8, 3 % 8)",
+          options: [
+            { text: "0 3", comment: "В числе 3 восьмерка содержится 0 раз (3 // 8 = 0). Число 3 целиком остается в остатке (3 % 8 = 3).", isCorrect: true },
+            { text: "0 0", comment: "Остаток не может быть 0, ведь 3 не разделилось нацело.", isCorrect: false },
+            { text: "1 5", comment: "Число 8 не помещается в тройку даже один раз.", isCorrect: false },
+            { text: "0.375 3", comment: "Оператор // отсекает дробь без остатка и возвращает целое число 0.", isCorrect: false }
+          ]
+        }
+      ],
+
+      // Слот №4: Упаковка / фасовка по коробкам
+      slot4: [
+        {
+          text: "№4. В коробку помещается ровно 6 чашек. Всего есть 29 чашек. Какое выражение определит, сколько полных коробок удастся собрать?",
+          code: "cups = 29",
+          options: [
+            { text: "cups // 6", comment: "Целочисленное деление нацело 29 // 6 дает 4 полные коробки.", isCorrect: true },
+            { text: "cups % 6", comment: "29 % 6 определит, сколько чашек останется без коробки (остаток 5), а не число коробок.", isCorrect: false },
+            { text: "cups / 6", comment: "Обычное деление 29 / 6 вернет дробное число (4.8333...).", isCorrect: false },
+            { text: "cups * 6", comment: "Умножение здесь не подходит.", isCorrect: false }
+          ]
+        },
+        {
+          text: "№4. Кондитер испек 38 пирожных. В одну упаковку помещается ровно 8 штук. Какое выражение покажет, сколько упаковок удастся заполнить полностью?",
+          code: "cakes = 38",
+          options: [
+            { text: "cakes // 8", comment: "38 // 8 находит целое число заполненных упаковок — ровно 4 упаковки.", isCorrect: true },
+            { text: "cakes % 8", comment: "38 % 8 вернет 6 — количество оставшихся пирожных без упаковки.", isCorrect: false },
+            { text: "cakes / 8", comment: "Обычное деление вернет вещественное число (4.75).", isCorrect: false },
+            { text: "cakes - 8", comment: "Это действие всего лишь вычтет одну порцию.", isCorrect: false }
+          ]
+        },
+        {
+          text: "№4. В одну пачку фасуют по 10 школьных тетрадей. Всего на складе 45 тетрадей. Какое выражение определит количество полных пачек?",
+          code: "notebooks = 45",
+          options: [
+            { text: "notebooks // 10", comment: "45 // 10 делит нацело и дает 4 полные пачки.", isCorrect: true },
+            { text: "notebooks % 10", comment: "45 % 10 покажет остаток — 5 тетрадей, которым не хватило до пачки.", isCorrect: false },
+            { text: "notebooks / 10", comment: "Обычное деление вернет дробное число (4.5).", isCorrect: false },
+            { text: "notebooks * 10", comment: "Умножение здесь не применимо.", isCorrect: false }
+          ]
+        }
+      ],
+
+      // Слот №5: Перевод секунд (оставшиеся секунды)
+      slot5: [
+        {
+          text: "№5. Секундомер зафиксировал 135 секунд. С помощью какого выражения можно узнать, сколько секунд останется сверх полных минут?",
+          code: "total_sec = 135",
+          options: [
+            { text: "total_sec % 60", comment: "В минуте 60 секунд. Остаток от деления на 60 показывает секунды, не вошедшие в полные минуты (135 % 60 = 15 сек).", isCorrect: true },
+            { text: "total_sec // 60", comment: "Операция // 60 находит количество полных минут (2 минуты), а не секунды.", isCorrect: false },
+            { text: "total_sec / 60", comment: "Обычное деление вернет дробь (2.25).", isCorrect: false },
+            { text: "total_sec % 100", comment: "В минуте 60 секунд, поэтому делить нужно на 60, а не на 100.", isCorrect: false }
+          ]
+        },
+        {
+          text: "№5. Видеоролик длится 190 секунд. Какое выражение определит, сколько секунд останется после перевода длительности в полные минуты?",
+          code: "video_sec = 190",
+          options: [
+            { text: "video_sec % 60", comment: "190 % 60 даст 10 секунд (так как 3 минуты — это 180 сек, и 10 сек остается сверх нормы).", isCorrect: true },
+            { text: "video_sec // 60", comment: "190 // 60 определит число целых минут (3 минуты), а не секунды.", isCorrect: false },
+            { text: "video_sec / 60", comment: "Обычное деление вернет дробное число минут.", isCorrect: false },
+            { text: "video_sec - 60", comment: "Вычитание 60 отнимет всего одну минуту, а их в 190 секундах три.", isCorrect: false }
+          ]
+        },
+        {
+          text: "№5. Таймер установлен на 250 секунд. Какое выражение покажет секунды, оставшиеся сверх целых минут?",
+          code: "timer_sec = 250",
+          options: [
+            { text: "timer_sec % 60", comment: "250 % 60 вычисляет остаток от деления на 60, то есть ровно 10 секунд (4 минуты по 60 сек + 10 сек).", isCorrect: true },
+            { text: "timer_sec // 60", comment: "Оператор // 60 вернет количество минут (4 минуты).", isCorrect: false },
+            { text: "timer_sec / 60", comment: "Обычный слэш вернет дробное число.", isCorrect: false },
+            { text: "timer_sec % 10", comment: "В минуте 60 секунд, а не 10.", isCorrect: false }
+          ]
+        }
+      ],
+
+      // Слот №8: Десятки трехзначного числа
+      slot8: [
+        {
+          text: "№8. Какое число будет напечатано на экране?",
+          code: "n = 482\nprint((n // 10) % 10)",
+          options: [
+            { text: "8", comment: "Сначала 482 // 10 отбрасывает единицы и оставляет 48. Затем 48 % 10 оставляет последнюю цифру — 8 (десятки).", isCorrect: true },
+            { text: "2", comment: "2 — это единицы числа (результат операции n % 10).", isCorrect: false },
+            { text: "4", comment: "4 — это сотни числа (результат операции n // 100).", isCorrect: false },
+            { text: "48", comment: "Операция % 10 оставляет только одну последнюю цифру от 48.", isCorrect: false }
+          ]
+        },
+        {
+          text: "№8. Какое число будет напечатано на экране?",
+          code: "n = 739\nprint((n // 10) % 10)",
+          options: [
+            { text: "3", comment: "Сначала 739 // 10 дает 73. Затем 73 % 10 оставляет разряд десятков — 3.", isCorrect: true },
+            { text: "9", comment: "9 — это последняя цифра (единицы: n % 10).", isCorrect: false },
+            { text: "7", comment: "7 — это первая цифра (сотни: n // 100).", isCorrect: false },
+            { text: "73", comment: "Оператор % 10 берет только одну цифру от 73.", isCorrect: false }
+          ]
+        },
+        {
+          text: "№8. Какое число будет напечатано на экране?",
+          code: "n = 561\nprint((n // 10) % 10)",
+          options: [
+            { text: "6", comment: "Сначала 561 // 10 отсекает единицы и дает 56. Затем 56 % 10 возвращает 6 (разряд десятков).", isCorrect: true },
+            { text: "1", comment: "1 — это последняя цифра (результат n % 10).", isCorrect: false },
+            { text: "5", comment: "5 — это первая цифра числа (сотни: n // 100).", isCorrect: false },
+            { text: "56", comment: "Остаток % 10 оставляет строго одну последнюю цифру.", isCorrect: false }
+          ]
+        }
+      ]
+    };
+
+    // Статичные вопросы теста (№6 и №7)
+    const staticQuestions = [
+      // №6: Последняя цифра
+      {
+        text: "№6. С помощью какого оператора можно получить последнюю цифру любого положительного целого числа n?",
+        code: null,
+        options: [
+          { text: "n % 10", comment: "Остаток от деления на 10 всегда в точности равен последней цифре числа (разряду единиц).", isCorrect: true },
+          { text: "n // 10", comment: "Деление нацело // 10 отсекает последнюю цифру, а не выделяет её.", isCorrect: false },
+          { text: "n % 2", comment: "n % 2 используется для проверки числа на четность.", isCorrect: false },
+          { text: "n // 100", comment: "n // 100 отбрасывает две последние цифры.", isCorrect: false }
+        ]
+      },
+      // №7: Первая цифра (сотни)
+      {
+        text: "№7. Дано трехзначное число n = 852. Какое выражение позволит получить его первую цифру (сотни)?",
+        code: "n = 852",
+        options: [
+          { text: "n // 100", comment: "852 // 100 отсекает последние две цифры и оставляет первую цифру — 8.", isCorrect: true },
+          { text: "n % 100", comment: "852 % 100 вернет 52 (две последние цифры числа).", isCorrect: false },
+          { text: "n // 10", comment: "852 // 10 отбросит только одну последнюю цифру и получится 85.", isCorrect: false },
+          { text: "n / 100", comment: "Обычное деление возвращает вещественное число (8.52).", isCorrect: false }
+        ]
+      }
+    ];
+
+    const letters = ["А", "Б", "В", "Г"];
+    let questions = [];
+    let currentQuestion = 0;
+    let score = 0;
+    let currentQuestionSolved = false;
+    let attemptsThisQuestion = 0;
+    let questionResults = [];
+
+    function getRandomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Подготовка списка заданий со случайной подстановкой вариантов
+    function prepareQuestions() {
+      const q1 = getRandomItem(dynamicSlots.slot1);
+      const q2 = getRandomItem(dynamicSlots.slot2);
+      const q3 = getRandomItem(dynamicSlots.slot3); // Вариации для №3
+      const q4 = getRandomItem(dynamicSlots.slot4); // Вариации для №4
+      const q5 = getRandomItem(dynamicSlots.slot5); // Вариации для №5
+      const q6 = staticQuestions[0];               // Последняя цифра
+      const q7 = staticQuestions[1];               // Сотни
+      const q8 = getRandomItem(dynamicSlots.slot8); // Вариации для №8
+
+      const compiledQuestions = [q1, q2, q3, q4, q5, q6, q7, q8];
+
+      questions = compiledQuestions.map(q => {
+        return {
+          ...q,
+          options: shuffleArray(q.options)
+        };
+      });
+    }
+
+    function startQuiz() {
+      prepareQuestions();
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('quiz-content').style.display = 'block';
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      currentQuestionSolved = false;
+      attemptsThisQuestion = 0;
+      const q = questions[currentQuestion];
+      
+      document.getElementById('question-number').innerText = `Задание ${currentQuestion + 1} из ${questions.length}`;
+      document.getElementById('score-counter').innerText = `Баллы: ${score}`;
+      document.getElementById('progress').style.width = `${(currentQuestion / questions.length) * 100}%`;
+      
+      document.getElementById('question-text').innerText = q.text;
+      
+      const codeBlock = document.getElementById('code-block');
+      if (q.code) {
+        codeBlock.innerText = q.code;
+        codeBlock.style.display = 'block';
+      } else {
+        codeBlock.style.display = 'none';
+      }
+
+      const optionsContainer = document.getElementById('options');
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = `${letters[index]}) ${opt.text}`;
+        btn.onclick = () => selectOption(index, btn);
+        optionsContainer.appendChild(btn);
+      });
+
+      const feedback = document.getElementById('feedback');
+      feedback.style.display = 'none';
+      feedback.className = 'feedback-box';
+      feedback.innerHTML = '';
+      
+      document.getElementById('next-btn').style.display = 'none';
+    }
+
+    function selectOption(selectedIndex, clickedBtn) {
+      if (currentQuestionSolved) return;
+
+      const q = questions[currentQuestion];
+      const feedback = document.getElementById('feedback');
+      const selectedOptionData = q.options[selectedIndex];
+
+      if (selectedOptionData.isCorrect) {
+        currentQuestionSolved = true;
+
+        const allButtons = document.querySelectorAll('.option-btn');
+        allButtons.forEach((btn, idx) => {
+          btn.disabled = true;
+          if (q.options[idx].isCorrect) {
+            btn.classList.remove('wrong');
+            btn.classList.add('correct');
+          }
+        });
+
+        if (attemptsThisQuestion === 0) {
+          score++;
+          questionResults.push(true);
+        } else {
+          questionResults.push(false);
+        }
+
+        document.getElementById('score-counter').innerText = `Баллы: ${score}`;
+
+        feedback.className = 'feedback-box correct';
+        feedback.style.display = 'block';
+        feedback.innerHTML = `<strong>Верно!</strong> ${selectedOptionData.comment}`;
+
+        document.getElementById('next-btn').style.display = 'block';
+      } else {
+        attemptsThisQuestion++;
+        clickedBtn.classList.add('wrong');
+        feedback.className = 'feedback-box wrong';
+        feedback.style.display = 'block';
+        feedback.innerHTML = `<strong>Неверно.</strong> ${selectedOptionData.comment}`;
+      }
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.getElementById('quiz-content').style.display = 'none';
+      const resultScreen = document.getElementById('result-screen');
+      resultScreen.style.display = 'block';
+      
+      document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+      const msg = document.getElementById('final-message');
+      
+      if (score === questions.length) {
+        msg.innerText = "Великолепный результат! Все задания решены верно с первой попытки.";
+      } else if (score >= 6) {
+        msg.innerText = "Хороший результат! Материал усвоен уверенно.";
+      } else {
+        msg.innerText = "Рекомендуется еще немного потренироваться в работе с операциями // и %.";
+      }
+
+      const badgesContainer = document.getElementById('results-badges');
+      badgesContainer.innerHTML = '';
+      questionResults.forEach((isSuccess, idx) => {
+        const badge = document.createElement('div');
+        badge.className = `badge-item ${isSuccess ? 'correct' : 'wrong'}`;
+        badge.innerText = `№${idx + 1}`;
+        badgesContainer.appendChild(badge);
+      });
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      questionResults = [];
+      document.getElementById('result-screen').style.display = 'none';
+      document.getElementById('start-screen').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
